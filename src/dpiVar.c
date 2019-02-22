@@ -606,7 +606,6 @@ void dpiVar__free(dpiVar *var, dpiError *error)
     dpiUtils__freeMemory(var);
 }
 
-
 //-----------------------------------------------------------------------------
 // dpiVar__getValue() [PRIVATE]
 //   Returns the contents of the variable in the type specified, if possible.
@@ -767,6 +766,9 @@ int dpiVar__getValue(dpiVar *var, dpiVarBuffer *buffer, uint32_t pos,
         case DPI_NATIVE_TYPE_BOOLEAN:
             data->value.asBoolean = buffer->data.asBoolean[pos];
             break;
+        case DPI_NATIVE_TYPE_NUMBER:
+            return dpiDataBuffer__fromOracleNumberAsNumber(&data->value,
+                error, &buffer->data.asNumber[pos]);
         default:
             break;
     }
@@ -1483,6 +1485,9 @@ int dpiVar__setValue(dpiVar *var, dpiVarBuffer *buffer, uint32_t pos,
             if (buffer->returnCode)
                 buffer->returnCode[pos] = 0;
             break;
+        case DPI_NATIVE_TYPE_NUMBER:
+            return dpiDataBuffer__toOracleNumberFromNumber(&data->value,
+                    error, &buffer->data.asNumber[pos]);
         case DPI_NATIVE_TYPE_TIMESTAMP:
             if (oracleTypeNum == DPI_ORACLE_TYPE_DATE)
                 return dpiDataBuffer__toOracleDate(&data->value,
@@ -1529,7 +1534,8 @@ static int dpiVar__validateTypes(const dpiOracleType *oracleType,
         case DPI_ORACLE_TYPE_NUMBER:
             if (nativeTypeNum == DPI_NATIVE_TYPE_INT64 ||
                     nativeTypeNum == DPI_NATIVE_TYPE_UINT64 ||
-                    nativeTypeNum == DPI_NATIVE_TYPE_BYTES)
+                    nativeTypeNum == DPI_NATIVE_TYPE_BYTES ||
+                    nativeTypeNum == DPI_NATIVE_TYPE_NUMBER)
                 return DPI_SUCCESS;
             break;
         default:

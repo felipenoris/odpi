@@ -203,6 +203,7 @@ typedef uint32_t dpiNativeTypeNum;
 #define DPI_NATIVE_TYPE_STMT                        3010
 #define DPI_NATIVE_TYPE_BOOLEAN                     3011
 #define DPI_NATIVE_TYPE_ROWID                       3012
+#define DPI_NATIVE_TYPE_NUMBER                      3013
 
 // operation codes (database change and continuous query notification)
 typedef uint32_t dpiOpCode;
@@ -395,6 +396,13 @@ typedef struct {
     int8_t tzMinuteOffset;
 } dpiTimestamp;
 
+#define OCI_NUMBER_SIZE     22
+
+// structure used for transferring OCINumber to/from ODPI-C
+typedef struct {
+    uint8_t numberPart[OCI_NUMBER_SIZE];
+} dpiNumber;
+
 
 //-----------------------------------------------------------------------------
 // Other Types
@@ -444,6 +452,7 @@ typedef union {
     dpiObject *asObject;
     dpiStmt *asStmt;
     dpiRowid *asRowid;
+    dpiNumber asNumber;
 } dpiDataBuffer;
 
 // structure used for application context
@@ -929,6 +938,9 @@ float dpiData_getFloat(dpiData *data);
 // return the integer portion of the data
 int64_t dpiData_getInt64(dpiData *data);
 
+// return the dpiNumber portion of the data
+dpiNumber dpiData_getNumber(dpiData *data);
+
 // return the interval (days/seconds) portion of the data
 dpiIntervalDS *dpiData_getIntervalDS(dpiData *data);
 
@@ -994,6 +1006,9 @@ void dpiData_setTimestamp(dpiData *data, int16_t year, uint8_t month,
 
 // set the unsigned integer portion of the data
 void dpiData_setUint64(dpiData *data, uint64_t value);
+
+// set the dpiNumber portion of the data
+void dpiData_setNumber(dpiData *data, dpiNumber number);
 
 
 //-----------------------------------------------------------------------------

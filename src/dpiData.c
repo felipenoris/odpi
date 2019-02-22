@@ -109,6 +109,15 @@ int dpiDataBuffer__fromOracleNumberAsUnsignedInteger(dpiDataBuffer *data,
             DPI_OCI_NUMBER_UNSIGNED, error);
 }
 
+//-----------------------------------------------------------------------------
+// dpiDataBuffer__fromOracleNumberAsNumber() [INTERNAL]
+//   Populate the data from an OCINumber structure as an dpiNumber.
+//-----------------------------------------------------------------------------
+int dpiDataBuffer__fromOracleNumberAsNumber(dpiDataBuffer *data,
+        dpiError *error, void *oracleValue)
+{
+    return dpiOci__numberAssign(error, oracleValue, &data->asNumber);
+}
 
 //-----------------------------------------------------------------------------
 // dpiDataBuffer__fromOracleNumberAsText() [INTERNAL]
@@ -345,6 +354,17 @@ int dpiDataBuffer__toOracleNumberFromDouble(dpiDataBuffer *data,
         return dpiError__set(error, "convert double to Oracle number",
                 DPI_ERR_NAN);
     return dpiOci__numberFromReal(data->asDouble, oracleValue, error);
+}
+
+
+//-----------------------------------------------------------------------------
+// dpiDataBuffer__toOracleNumberFromNumber() [INTERNAL]
+//   Populate the data in an OCINumber structure from a dpiNumber.
+//-----------------------------------------------------------------------------
+int dpiDataBuffer__toOracleNumberFromNumber(dpiDataBuffer *data,
+        dpiError *error, void *oracleValue)
+{
+    return dpiOci__numberAssign(error, &data->asNumber, oracleValue);
 }
 
 
@@ -653,6 +673,16 @@ uint64_t dpiData_getUint64(dpiData *data)
 
 
 //-----------------------------------------------------------------------------
+// dpiData_getNumber() [PUBLIC]
+//   Return the dpiNumber portion of the data.
+//-----------------------------------------------------------------------------
+dpiNumber dpiData_getNumber(dpiData *data)
+{
+    return data->value.asNumber;
+}
+
+
+//-----------------------------------------------------------------------------
 // dpiData_setBool() [PUBLIC]
 //   Set the boolean portion of the data.
 //-----------------------------------------------------------------------------
@@ -816,3 +846,13 @@ void dpiData_setUint64(dpiData *data, uint64_t value)
     data->value.asUint64 = value;
 }
 
+
+//-----------------------------------------------------------------------------
+// dpiData_setNumber() [PUBLIC]
+//   Set the dpiNumber portion of the data.
+//-----------------------------------------------------------------------------
+void dpiData_setNumber(dpiData *data, dpiNumber number)
+{
+    data->isNull = 0;
+    data->value.asNumber = number;
+}

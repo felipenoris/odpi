@@ -398,7 +398,8 @@ typedef int (*dpiOciFnType__typeByFullName)(void *env, void *err,
         uint32_t full_type_name_length, const char *version_name,
         uint32_t version_name_length, uint16_t pin_duration, int get_option,
         void **tdo);
-
+typedef int (*dpiOciFnType__numberAssign)(void *err,
+        const void *from, void *to);
 
 // library handle for dynamically loaded OCI library
 static void *dpiOciLibHandle = NULL;
@@ -581,6 +582,7 @@ static struct {
     dpiOciFnType__transRollback fnTransRollback;
     dpiOciFnType__transStart fnTransStart;
     dpiOciFnType__typeByFullName fnTypeByFullName;
+    dpiOciFnType__numberAssign fnNumberAssign;
 } dpiOciSymbols;
 
 
@@ -3550,5 +3552,20 @@ int dpiOci__typeByFullName(dpiConn *conn, const char *name,
             error->handle, conn->handle, name, nameLength, NULL, 0,
             DPI_OCI_DURATION_SESSION, DPI_OCI_TYPEGET_ALL, tdo);
     DPI_OCI_CHECK_AND_RETURN(error, status, conn, "get type by full name");
+}
+
+
+//-----------------------------------------------------------------------------
+// dpiOci__numberAssign() [INTERNAL]
+//   Wrapper for OCINumberAssign().
+//-----------------------------------------------------------------------------
+int dpiOci__numberAssign(dpiError *error, const void *from, void *to)
+{
+    int status;
+
+    DPI_OCI_LOAD_SYMBOL("OCINumberAssign", dpiOciSymbols.fnNumberAssign)
+    status = (*dpiOciSymbols.fnNumberAssign)(error->handle,
+            from, to);
+    DPI_OCI_CHECK_AND_RETURN(error, status, NULL, "number assign");
 }
 

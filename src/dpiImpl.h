@@ -1153,6 +1153,8 @@ int dpiDataBuffer__fromOracleNumberAsDouble(dpiDataBuffer *data,
         dpiError *error, void *oracleValue);
 int dpiDataBuffer__fromOracleNumberAsInteger(dpiDataBuffer *data,
         dpiError *error, void *oracleValue);
+int dpiDataBuffer__fromOracleNumberAsNumber(dpiDataBuffer *data,
+        dpiError *error, void *oracleValue);
 int dpiDataBuffer__fromOracleNumberAsText(dpiDataBuffer *data, dpiEnv *env,
         dpiError *error, void *oracleValue);
 int dpiDataBuffer__fromOracleNumberAsUnsignedInteger(dpiDataBuffer *data,
@@ -1167,6 +1169,8 @@ int dpiDataBuffer__toOracleIntervalDS(dpiDataBuffer *data, dpiEnv *env,
 int dpiDataBuffer__toOracleIntervalYM(dpiDataBuffer *data, dpiEnv *env,
         dpiError *error, void *oracleValue);
 int dpiDataBuffer__toOracleNumberFromDouble(dpiDataBuffer *data,
+        dpiError *error, void *oracleValue);
+int dpiDataBuffer__toOracleNumberFromNumber(dpiDataBuffer *data,
         dpiError *error, void *oracleValue);
 int dpiDataBuffer__toOracleNumberFromInteger(dpiDataBuffer *data,
         dpiError *error, void *oracleValue);
@@ -1690,7 +1694,7 @@ int dpiOci__transRollback(dpiConn *conn, int checkError, dpiError *error);
 int dpiOci__transStart(dpiConn *conn, dpiError *error);
 int dpiOci__typeByFullName(dpiConn *conn, const char *name,
         uint32_t nameLength, void **tdo, dpiError *error);
-
+int dpiOci__numberAssign(dpiError *error, const void *from, void *to);
 
 //-----------------------------------------------------------------------------
 // definition of internal dpiMsgProps methods
